@@ -1,7 +1,7 @@
 # Planning
 
-Intended output is `{outputDir}/{recipName}/{recipName} - {month}.zip`
-For all months the original chat covers
+Intended output is `{outputDir}/{recipName}/{recipName} - {month}.zip` <br>
+For all months covered by the original chat
 
 ## Modules
 
