@@ -26,6 +26,14 @@ zip_ref.close()
 print("Unzipped!")
 print()
 
+# Make dir if it doesn't exist
+try:
+    os.mkdir(f"{outputDir}/{recipName}")
+except OSError:
+    pass
+
+outputDir = f"{outputDir}/{recipName}"
+
 #
 print()
 print("Complete!")
