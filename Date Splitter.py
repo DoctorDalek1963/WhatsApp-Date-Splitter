@@ -64,11 +64,12 @@ def message_date_parser(string):
         date = dt.datetime.strptime(string, "[%d/%m/%Y")
         year = dt.datetime.strftime(date, "%Y")
         month = dt.datetime.strftime(date, "%m").replace("0", "")
-
+        month_dir = f"{outputDir}/{recipName} - {month} {year}"
+        
         # If dir doesn't exist, make dir and file
-        if not os.path.exists(f"{outputDir}/{recipName} - {month} {year}"):
-            os.mkdir(f"{outputDir}/{recipName} - {month} {year}")
-            _ = open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "x", encoding="utf-8")
+        if not os.path.exists(month_dir):
+            os.mkdir(month_dir)
+            _ = open(f"{month_dir}/_chat.txt", "x", encoding="utf-8")
 
     with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
         file.write(string_bak + "\n")
