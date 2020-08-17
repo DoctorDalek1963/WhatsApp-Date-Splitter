@@ -1,20 +1,23 @@
 # Planning
 
-Intended output is `{outputDir}/{recipName}/{recipName} - {month}.zip` <br>
-For all months covered by the original chat
+ Intended output is `{outputDir}/{recipName}/{recipName} - {month}.zip` <br>
+ For all months covered by the original chat
 
 ## Modules
 
-- Initial inputs
-- Unzip and rezip
-- Text date parser
-- File date parser
-- Cut section of _chat.txt to new _chat.txt in output directory
-- Cut files to output directory
-- Clear up
+ - Initial inputs
+ - Unzip and rezip
+ - Text date parser
+ - File date parser
+ - Cut section of _chat.txt to new _chat.txt in output directory
+ - Cut files to output directory
+ - Clear up
 
 ## Steps
 
-1. Take initial inputs
-2. Unzip into `full_temp` folder
-3. Parse _chat.txt into months
+ 1. Take initial inputs
+ 2. Unzip into `full_temp` folder
+ 3. Parse _chat.txt into months
+ 4. Move attachments to correct month folders
+ 5. Zip up every month folder
+ 6. Remove temporary folders

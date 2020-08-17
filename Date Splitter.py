@@ -15,9 +15,8 @@ print()
 input_file = input("Please enter the name of the input zip file (including .zip extension): ")
 print()
 recipName = input("Please enter the name of the recipient: ")
-# print()
-# outputDir = input("Please enter a full output directory: ")
-outputDir = "C:/Users/joshu/Documents/GitHub/WhatsApp-Date-Splitter/venv/Output"
+print()
+outputDir = input("Please enter a full output directory: ")
 print()
 
 # Make dir if it doesn't exist
@@ -99,8 +98,6 @@ def attachment_date_parse(file):
     filename = file.split("\\")[1]
     os.rename(file, f"{month_dir}/{filename}")
 
-    # TODO: Parse filename (r"\d+-\w+-(%Y)-(%m)-(%d)") to get date object
-
 
 print(f"Splitting {input_file} into months...")
 
@@ -120,15 +117,26 @@ for f in files:
 print("Split complete!")
 print()
 print(f"There may be some files left in {outputDir}/full_temp")
-print("Please move them to their correct folders")
+print("Please move them to their correct folders if possible")
 print()
 input("Press enter to finalise...")
+print()
+print("Zipping...")
 
 os.rmdir(f"{outputDir}/full_temp")
 
-# TODO: Re-zip all dirs in {outputDir}
+folders = glob(f"{outputDir}/*")
+for folder in folders:  # For all folders in outputDir
+    shutil.make_archive(folder, "zip", folder)  # Create zip file from folder
 
+    files = glob(f"{folder}/*")
+    for file in files:  # For all files in every folder
+        os.remove(file)
+
+    os.rmdir(folder)
+
+print("Zipping complete!")
 print()
-print("Complete!")
+print("You may now exit the program")
 
 #
