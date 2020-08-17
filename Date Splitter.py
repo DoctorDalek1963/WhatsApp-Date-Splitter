@@ -2,6 +2,7 @@ from zipfile import ZipFile
 import os
 from glob import glob
 import datetime as dt
+import re
 import shutil
 
 # ===== Initial Setup
@@ -46,7 +47,7 @@ year = ""
 
 
 def message_date_parser(string):
-    """Parse the year and month of each line of _chat.txt."""
+    """Copy messages from _chat.txt to the correct month folder."""
     global month
     global year
 
@@ -75,10 +76,58 @@ def message_date_parser(string):
         file.write(string_bak + "\n")
 
 
+def attachment_date_parse(file):
+    """Move attachments to the correct month folder."""
+    global month
+    global year
+
+    # Use RegEx to parse date
+    tuple_list = re.findall(r"\d+-\w+-(\d{4})-(\d{2})", file)
+    # TODO: Fix non-dated file handling
+    if not tuple_list:  # If file isn't properly dated, skip it
+        return
+
+    tup = tuple_list[0]
+
+    string = f"{tup[0]} {tup[1]}"
+    date = dt.datetime.strptime(string, "%Y %m")
+
+    year = dt.datetime.strftime(date, "%Y")
+    month = dt.datetime.strftime(date, "%m").replace("0", "")
+    month_dir = f"{outputDir}/{recipName} - {month} {year}"
+
+    filename = file.split("\\")[1]
+    os.rename(file, f"{month_dir}/{filename}")
+
+    # TODO: Parse filename (r"\d+-\w+-(%Y)-(%m)-(%d)") to get date object
+
+
+print(f"Splitting {input_file} into months...")
+
+# ===== Copy text messages of _chat.txt to month folders
+
 for message in chat_txt_list:
     message_date_parser(message)
 
-#
+os.remove(f"{outputDir}/full_temp/_chat.txt")
+
+# ===== Copy attachments to month folders
+
+files = glob(f"{outputDir}/full_temp/*")
+for f in files:
+    attachment_date_parse(f)
+
+print("Split complete!")
+print()
+print(f"There may be some files left in {outputDir}/full_temp")
+print("Please move them to their correct folders")
+print()
+input("Press enter to finalise...")
+
+os.rmdir(f"{outputDir}/full_temp")
+
+# TODO: Re-zip all dirs in {outputDir}
+
 print()
 print("Complete!")
 
