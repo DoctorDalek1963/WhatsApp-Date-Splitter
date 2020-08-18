@@ -1,16 +1,18 @@
 from zipfile import ZipFile
 import os
 from glob import glob
-import datetime as dt
+from datetime import datetime
 import re
-import shutil
+from shutil import make_archive
 
 # ===== Initial Setup
+
+cwd = os.getcwd()
 
 print()
 print("Welcome to the WhatsApp Date Splitter!")
 print()
-print("Please move the selected zip file to /venv/")
+print(f"Please move the selected zip file to {cwd}")
 print()
 input_file = input("Please enter the name of the input zip file (including .zip extension): ")
 print()
@@ -61,11 +63,11 @@ def message_date_parser(string):
     if string[0] == "[":  # If date
         # Parse year and month
         string = string.split(",")[0]
-        date = dt.datetime.strptime(string, "[%d/%m/%Y")
-        year = dt.datetime.strftime(date, "%Y")
-        month = dt.datetime.strftime(date, "%m").replace("0", "")
+        date = datetime.strptime(string, "[%d/%m/%Y")
+        year = datetime.strftime(date, "%Y")
+        month = datetime.strftime(date, "%m").replace("0", "")
         month_dir = f"{outputDir}/{recipName} - {month} {year}"
-        
+
         # If dir doesn't exist, make dir and file
         if not os.path.exists(month_dir):
             os.mkdir(month_dir)
@@ -89,10 +91,10 @@ def attachment_date_parse(file):
     tup = tuple_list[0]
 
     string = f"{tup[0]} {tup[1]}"
-    date = dt.datetime.strptime(string, "%Y %m")
+    date = datetime.strptime(string, "%Y %m")
 
-    year = dt.datetime.strftime(date, "%Y")
-    month = dt.datetime.strftime(date, "%m").replace("0", "")
+    year = datetime.strftime(date, "%Y")
+    month = datetime.strftime(date, "%m").replace("0", "")
     month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
     filename = file.split("\\")[1]
@@ -127,7 +129,7 @@ os.rmdir(f"{outputDir}/full_temp")
 
 folders = glob(f"{outputDir}/*")
 for folder in folders:  # For all folders in outputDir
-    shutil.make_archive(folder, "zip", folder)  # Create zip file from folder
+    make_archive(folder, "zip", folder)  # Create zip file from folder
 
     files = glob(f"{folder}/*")
     for file in files:  # For all files in every folder
