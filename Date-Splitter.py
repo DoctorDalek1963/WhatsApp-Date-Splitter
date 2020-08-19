@@ -2,8 +2,8 @@ from zipfile import ZipFile
 import os
 from glob import glob
 from datetime import datetime
-import re
 from shutil import make_archive
+import re
 
 # ===== Initial Setup
 
