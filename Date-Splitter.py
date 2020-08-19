@@ -1,20 +1,24 @@
-from zipfile import ZipFile
-import os
-from glob import glob
-from datetime import datetime
 from shutil import make_archive
+from datetime import datetime
+from zipfile import ZipFile
+from glob import glob
+import os
 import re
 
 # ===== Initial Setup
 
 cwd = os.getcwd()
+if not cwd.endswith("venv"):
+    os.chdir(f"{cwd}/venv")
+    cwd = os.getcwd()
 
-print()
 print("Welcome to the WhatsApp Date Splitter!")
 print()
 print(f"Please move the selected zip file to {cwd}")
 print()
-input_file = input("Please enter the name of the input zip file (including .zip extension): ")
+input_file = input("Please enter the name of the input zip file: ")
+if not input_file.endswith(".zip"):
+    input_file = f"{input_file}.zip"
 print()
 recipName = input("Please enter the name of the recipient: ")
 print()
@@ -27,7 +31,7 @@ try:
 except OSError:
     pass
 
-outputDir = f"{outputDir}/{recipName}"
+outputDir = f"{outputDir}/{recipName}"  # Change outputDir for convenience
 
 # Extracts selected zip file to /full_temp/
 zip_ref = ZipFile(input_file)
@@ -37,24 +41,29 @@ zip_ref.close()
 print("Unzipped!")
 print()
 
+# Creates chat_txt_list as list of _chat.txt
 with open(f"{outputDir}/full_temp/_chat.txt", encoding="utf-8") as f:
     chat_txt_list = f.read().splitlines()
 
+# Initialise time variables
 month = ""
 year = ""
+
+print(f"Splitting zip into months...")
 
 
 # ===== Define functions
 
 
-def message_date_parser(string):
+def message_date_parser(string):  # Split _chat.txt into months
     """Copy messages from _chat.txt to the correct month folder."""
-    global month
-    global year
+    # Import global variables
+    global month, year
 
-    string_bak = string
     string = string.replace("\u200e", "")  # Clear left-to-right mark
+    string_bak = string
 
+    # If blank line, just write "\n"
     if string == "":
         with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
             file.write("\n")
@@ -73,35 +82,34 @@ def message_date_parser(string):
             os.mkdir(month_dir)
             _ = open(f"{month_dir}/_chat.txt", "x", encoding="utf-8")
 
+    # Write string to _chat.txt in correct folder
     with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
         file.write(string_bak + "\n")
 
 
-def attachment_date_parse(file):
+def attachment_date_parse(file):  # Move attachments to the correct folder
     """Move attachments to the correct month folder."""
-    global month
-    global year
+    global month, year
 
     # Use RegEx to parse date
-    tuple_list = re.findall(r"\d+-\w+-(\d{4})-(\d{2})", file)
+    tuple_list = re.findall(r"\d+-\w+-(\d{4}-\d{2})", file)
+
     # TODO: Fix non-dated file handling
     if not tuple_list:  # If file isn't properly dated, skip it
         return
 
-    tup = tuple_list[0]
+    string = tuple_list[0]
+    date = datetime.strptime(string, "%Y-%m")
 
-    string = f"{tup[0]} {tup[1]}"
-    date = datetime.strptime(string, "%Y %m")
-
+    # Format year and month
     year = datetime.strftime(date, "%Y")
     month = datetime.strftime(date, "%m").replace("0", "")
     month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
-    filename = file.split("\\")[1]
+    # Move file
+    filename = file.split("\\")[-1]
     os.rename(file, f"{month_dir}/{filename}")
 
-
-print(f"Splitting {input_file} into months...")
 
 # ===== Copy text messages of _chat.txt to month folders
 
@@ -132,13 +140,11 @@ for folder in folders:  # For all folders in outputDir
     make_archive(folder, "zip", folder)  # Create zip file from folder
 
     files = glob(f"{folder}/*")
-    for file in files:  # For all files in every folder
-        os.remove(file)
+    for f in files:  # For all files in every folder
+        os.remove(f)
 
     os.rmdir(folder)
 
 print("Zipping complete!")
 print()
-print("You may now exit the program")
-
-#
+input("Press enter to exit the program...")

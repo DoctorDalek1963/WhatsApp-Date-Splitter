@@ -29,7 +29,7 @@
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunManager">
-    <configuration name="Date Splitter" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="Date-Splitter" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="WhatsApp-Date-Splitter" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -41,7 +41,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Date Splitter.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Date-Splitter.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -52,7 +52,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Date Splitter" />
+        <item itemvalue="Python.Date-Splitter" />
       </list>
     </recent_temporary>
   </component>
@@ -68,42 +68,42 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="687" y="177" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597483650692">
+    <state x="687" y="177" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597847740830">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="687" y="177" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597483650692" />
-    <state width="936" height="352" key="GridCell.Tab.0.bottom" timestamp="1597689022155">
+    <state x="687" y="177" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597847740830" />
+    <state width="936" height="349" key="GridCell.Tab.0.bottom" timestamp="1597849857356">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.bottom.inPresentationMode" timestamp="1597674618446">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.bottom.inPresentationMode/0.0.1920.1040@0.0.1920.1040" timestamp="1597674618446" />
-    <state width="936" height="352" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1597689022155" />
-    <state width="936" height="352" key="GridCell.Tab.0.center" timestamp="1597689022155">
+    <state width="936" height="349" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1597849857356" />
+    <state width="936" height="349" key="GridCell.Tab.0.center" timestamp="1597849857355">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.center.inPresentationMode" timestamp="1597674618446">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.center.inPresentationMode/0.0.1920.1040@0.0.1920.1040" timestamp="1597674618446" />
-    <state width="936" height="352" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1597689022155" />
-    <state width="936" height="352" key="GridCell.Tab.0.left" timestamp="1597689022155">
+    <state width="936" height="349" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1597849857355" />
+    <state width="936" height="349" key="GridCell.Tab.0.left" timestamp="1597849857355">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.left.inPresentationMode" timestamp="1597674618445">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.left.inPresentationMode/0.0.1920.1040@0.0.1920.1040" timestamp="1597674618445" />
-    <state width="936" height="352" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1597689022155" />
-    <state width="936" height="352" key="GridCell.Tab.0.right" timestamp="1597689022155">
+    <state width="936" height="349" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1597849857355" />
+    <state width="936" height="349" key="GridCell.Tab.0.right" timestamp="1597849857356">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.right.inPresentationMode" timestamp="1597674618446">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="936" height="280" key="GridCell.Tab.0.right.inPresentationMode/0.0.1920.1040@0.0.1920.1040" timestamp="1597674618446" />
-    <state width="936" height="352" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1597689022155" />
+    <state width="936" height="349" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1597849857356" />
     <state width="936" height="344" key="GridCell.Tab.1.bottom" timestamp="1597611284548">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
