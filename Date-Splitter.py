@@ -66,7 +66,7 @@ def message_date_parser(string):  # Split _chat.txt into months
             file.write("\n")
         return
 
-    if re.match(r"\[\d{2}/\d{2}/\d{4},", string):  # If date
+    if re.match(r"^\[\d{2}/\d{2}/\d{4},", string):  # If date
         # Parse year and month
         string = string.split(",")[0]
         date = datetime.strptime(string, "[%d/%m/%Y")
@@ -89,7 +89,7 @@ def attachment_date_parse(file):  # Move attachments to the correct folder
     global month, year
 
     # Use RegEx to parse date
-    tuple_list = re.findall(r"\d+-\w+-(\d{4}-\d{2})", file)
+    tuple_list = re.findall(r"\d{8}-\w+-(\d{4}-\d{2})", file)
 
     # TODO: Fix non-dated file handling
     if not tuple_list:  # If file isn't properly dated, skip it
