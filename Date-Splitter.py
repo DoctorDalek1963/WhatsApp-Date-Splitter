@@ -8,9 +8,6 @@ import re
 # ===== Initial Setup
 
 cwd = os.getcwd()
-if not cwd.endswith("venv"):
-    os.chdir(f"{cwd}/venv")
-    cwd = os.getcwd()
 
 print("Welcome to the WhatsApp Date Splitter!")
 print()
@@ -69,7 +66,7 @@ def message_date_parser(string):  # Split _chat.txt into months
             file.write("\n")
         return
 
-    if string[0] == "[":  # If date
+    if re.match(r"\[\d{2}/\d{2}/\d{4},", string):  # If date
         # Parse year and month
         string = string.split(",")[0]
         date = datetime.strptime(string, "[%d/%m/%Y")
