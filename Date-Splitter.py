@@ -13,9 +13,9 @@ print("Welcome to the WhatsApp Date Splitter!")
 print()
 print(f"Please move the selected zip file to {cwd}")
 print()
-input_file = input("Please enter the name of the input zip file: ")
-if not input_file.endswith(".zip"):
-    input_file = f"{input_file}.zip"
+inputFile = input("Please enter the name of the input zip file: ")
+if not inputFile.endswith(".zip"):
+    inputFile = f"{inputFile}.zip"
 print()
 recipName = input("Please enter the name of the recipient: ")
 print()
@@ -31,10 +31,10 @@ except OSError:
 outputDir = f"{outputDir}/{recipName}"  # Change outputDir for convenience
 
 # Extracts selected zip file to /full_temp/
-zip_ref = ZipFile(input_file)
+zipRef = ZipFile(inputFile)
 print("Unzipping...")
-zip_ref.extractall(f"{outputDir}/full_temp")
-zip_ref.close()
+zipRef.extractall(f"{outputDir}/full_temp")
+zipRef.close()
 print("Unzipped!")
 print()
 
