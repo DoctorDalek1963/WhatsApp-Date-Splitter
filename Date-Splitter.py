@@ -17,9 +17,9 @@ inputFile = input("Please enter the name of the input zip file: ")
 if not inputFile.endswith(".zip"):
     inputFile = f"{inputFile}.zip"
 print()
-recipName = input("Please enter the name of the recipient: ")
-print()
 outputDir = input("Please enter a full output directory: ")
+print()
+recipName = input("Please enter the name of the recipient: ")
 print()
 
 # Make dir if it doesn't exist
