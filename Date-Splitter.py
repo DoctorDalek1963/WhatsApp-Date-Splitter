@@ -77,7 +77,7 @@ def message_date_parser(string):  # Split _chat.txt into months
         # If dir doesn't exist, make dir and file
         if not os.path.exists(month_dir):
             os.mkdir(month_dir)
-            _ = open(f"{month_dir}/_chat.txt", "x", encoding="utf-8")
+            open(f"{month_dir}/_chat.txt", "x", encoding="utf-8")
 
     # Write string to _chat.txt in correct folder
     with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
@@ -100,7 +100,11 @@ def attachment_date_parse(file):  # Move attachments to the correct folder
 
     # Format year and month
     year = datetime.strftime(date, "%Y")
-    month = datetime.strftime(date, "%m").replace("0", "")
+    month = datetime.strftime(date, "%m")
+    # Remove leading zero to turn "02" into "2" but now turn "10" into "1"
+    if month.startswith("0"):
+        month = month.replace("0", "")
+
     month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
     # Move file
