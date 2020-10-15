@@ -110,8 +110,7 @@ def attachment_date_parse(file):  # Move attachments to the correct folder
     # Use RegEx to parse date
     tuple_list = re.findall(r"\d{8}-\w+-(\d{4}-\d{2})", file)
 
-    # TODO: Fix non-dated file handling
-    if not tuple_list:  # If file isn't properly dated, skip it
+    if not tuple_list:  # If file isn't properly dated, skip it. We'll handle it later
         return
 
     string = tuple_list[0]
@@ -120,7 +119,7 @@ def attachment_date_parse(file):  # Move attachments to the correct folder
     # Format year and month
     year = datetime.strftime(date, "%Y")
     month = datetime.strftime(date, "%m")
-    # Remove leading zero to turn "02" into "2" but now turn "10" into "1"
+    # Remove leading zero to turn "02" into "2" but not turn "10" into "1"
     if month.startswith("0"):
         month = month.replace("0", "")
 
