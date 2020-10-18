@@ -1,10 +1,17 @@
 # WhatsApp-Date-Splitter
 
+![License](https://img.shields.io/github/license/DoctorDalek1963/WhatsApp-Date-Splitter)
+![Release](https://img.shields.io/github/v/release/DoctorDalek1963/WhatsApp-Date-Splitter)
+![Last Commit](https://img.shields.io/github/last-commit/DoctorDalek1963/WhatsApp-Date-Splitter)
+
+![Repo Size](https://img.shields.io/github/repo-size/DoctorDalek1963/WhatsApp-Date-Splitter)
+![Code Size](https://img.shields.io/github/languages/code-size/DoctorDalek1963/WhatsApp-Date-Splitter)
+
 A program to split exported WhatsApp chats into months to allow for more convenient zip file sizes to be formatted.
 
-I have previously written a [program](https://github.com/DoctorDalek1963/WhatsApp-Formatter) to reformat exported WhatsApp chats into HTML files.
+I have previously made a [program](https://github.com/DoctorDalek1963/WhatsApp-Formatter) to reformat exported WhatsApp chats into HTML files.
 This program is intended to split exported chats into zip files containing truncated text files and the associated attachments.
-This will make it easier for my formatter to produce smaller HTML files.
+This will make it easier for the formatter to produce smaller HTML files.
 
 ## Steps:
 
