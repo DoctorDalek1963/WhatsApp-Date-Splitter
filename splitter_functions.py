@@ -24,57 +24,64 @@ from glob import glob
 import os
 import re
 
-# ===== Initial Setup
-
-cwd = os.getcwd()
-
-print("Welcome to the WhatsApp Date Splitter!")
-print()
-print(f"Please move the selected zip file to {cwd}")
-print()
-inputFile = input("Please enter the name of the input zip file: ")
-if not inputFile.endswith(".zip"):
-    inputFile += ".zip"
-print()
-outputDir = input("Please enter a full output directory: ")
-print()
-recipName = input("Please enter the name of the recipient: ")
-print()
-
-# Make dir if it doesn't exist
-try:
-    os.mkdir(f"{outputDir}\\{recipName}")
-except OSError:
-    pass
-
-outputDir = f"{outputDir}\\{recipName}"  # Change outputDir for convenience
-
-# Extract selected zip file to /full_temp/
-try:
-    zipRef = ZipFile(inputFile)
-    print(f"Unzipping {inputFile}...")
-    zipRef.extractall(f"{outputDir}\\full_temp")
-    zipRef.close()
-    print(f"Unzipped!")
-except OSError:
-    print(f"{inputFile} not found")
-    input("Press enter to exit")
-    exit(0)
-
-print()
-
-# Creates chat_txt_list as list of lines in _chat.txt
-with open(f"{outputDir}\\full_temp\\_chat.txt", encoding="utf-8") as attachment:
-    chat_txt_list = attachment.read().splitlines()
-
-# Initialise time variables
-month = ""
-year = ""
-
-print(f"Splitting {inputFile} into months...")
+month = year = ""
+outputDir = recipName = ""
+chat_txt_list = ""
 
 
-# ===== Define functions
+def extract_zip(file, output, name):
+    """The function to be called first. Extracts the zip and sets up variables for all other functions."""
+    global outputDir, recipName
+    outputDir = output
+    recipName = name
+
+    # Make dir if it doesn't exist
+    try:
+        os.mkdir(f"{outputDir}\\{recipName}")
+    except OSError:
+        pass
+
+    outputDir = f"{outputDir}\\{recipName}"  # Change outputDir for convenience
+
+    zip_file = ZipFile(file)
+    zip_file.extractall(f"{outputDir}\\full_temp")
+    zip_file.close()
+
+
+def date_split():
+    """MUST CALL extract_zip() FIRST.
+
+    The main function to be called. Splits the zip into months."""
+    global outputDir, recipName
+    global chat_txt_list
+
+    # Creates chat_txt_list as list of lines in _chat.txt
+    with open(f"{outputDir}\\full_temp\\_chat.txt", encoding="utf-8") as attachment:
+        chat_txt_list = attachment.read().splitlines()
+
+    for message in chat_txt_list:
+        message_date_parse(message)
+
+    os.remove(f"{outputDir}\\full_temp\\_chat.txt")
+
+    files = glob(f"{outputDir}\\full_temp\\*")
+    for attachment in files:
+        attachment_date_parse(attachment)
+
+    os.rmdir(f"{outputDir}\\full_temp")
+
+
+def zip_up_split_folders():
+    """Zip up all the folders created by date_split()."""
+    folders = glob(f"{outputDir}\\*")
+    for folder in folders:  # For all folders in outputDir
+        make_archive(folder, "zip", folder)  # Create zip file from folder
+
+        files = glob(f"{folder}\\*")
+        for f in files:  # For all files in folder
+            os.remove(f)
+
+        os.rmdir(folder)
 
 
 def message_date_parse(string):  # Split _chat.txt into months
@@ -132,10 +139,7 @@ def non_dated_attachment_parse(file_full_directory):
 
             month_dir = f"{outputDir}\\{recipName} - {month} {year}"
 
-            try:
-                os.rename(file_full_directory, f"{month_dir}\\{filename}")
-            except OSError:
-                print(f"{filename} was not found (NON DATED)")
+            os.rename(file_full_directory, f"{month_dir}\\{filename}")
 
             break  # Break from for loop
 
@@ -164,42 +168,4 @@ def attachment_date_parse(file_full_directory):
 
     filename = file_full_directory.split("\\")[-1]
 
-    try:
-        os.rename(file_full_directory, f"{month_dir}\\{filename}")
-    except OSError:
-        print(f"{filename} was not found (DATED)")
-
-
-# ===== Copy text messages of _chat.txt to month folders
-
-for message in chat_txt_list:
-    message_date_parse(message)
-
-os.remove(f"{outputDir}\\full_temp\\_chat.txt")
-
-# ===== Copy attachments to month folders
-
-files = glob(f"{outputDir}\\full_temp\\*")
-for attachment in files:
-    attachment_date_parse(attachment)
-
-print("Split complete!")
-print()
-
-os.rmdir(f"{outputDir}\\full_temp")
-
-print("Zipping...")
-
-folders = glob(f"{outputDir}\\*")
-for folder in folders:  # For all folders in outputDir
-    make_archive(folder, "zip", folder)  # Create zip file from folder
-
-    files = glob(f"{folder}\\*")
-    for f in files:  # For all files in folder
-        os.remove(f)
-
-    os.rmdir(folder)
-
-print("Zipping complete!")
-print()
-input("Press enter to exit the program...")
+    os.rename(file_full_directory, f"{month_dir}\\{filename}")
