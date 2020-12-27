@@ -179,3 +179,15 @@ def attachment_date_parse(file_full_directory: str):
     filename = file_full_directory.split("/")[-1]
 
     os.rename(file_full_directory, f"{month_dir}/{filename}")
+
+
+def split_single_chat(input_file: str, output_dir: str, name: str):
+    """Split a chat completely by calling all the necessary functions.
+
+This is the only function that needs to be called to split one chat."""
+    try:
+        extract_zip(input_file, output_dir, name)
+    except OSError:
+        raise OSError('Zip file "' + input_file + '" not found')
+    date_split()
+    zip_up_split_folders()
