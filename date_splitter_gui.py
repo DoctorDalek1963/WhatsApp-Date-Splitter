@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from splitter_functions import extract_zip, date_split, zip_up_split_folders
+from splitter_functions import split_single_chat
 from tkinter import filedialog, StringVar
 import tkinter as tk
 import threading
@@ -66,9 +66,7 @@ def process():
     fixed_name_recip = recipName
     fixed_name_dir = outputDir
 
-    extract_zip(fixed_name_zip, fixed_name_dir, fixed_name_recip)
-    date_split()
-    zip_up_split_folders()
+    split_single_chat(fixed_name_zip, fixed_name_dir, fixed_name_recip)
     finishExportFlag = True
 
 
