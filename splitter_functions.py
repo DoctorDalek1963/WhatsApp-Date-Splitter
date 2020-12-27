@@ -30,7 +30,11 @@ chat_txt_list = ""
 
 
 def extract_zip(file, output, name):
-    """The function to be called first. Extracts the zip and sets up variables for all other functions."""
+    """The function to be called first.
+
+Function number 1 in process pipeline.
+
+Extracts the zip and sets up global variables for all other functions."""
     global outputDir, recipName
     outputDir = output
     recipName = name
@@ -51,7 +55,9 @@ def extract_zip(file, output, name):
 def date_split():
     """MUST CALL extract_zip() FIRST.
 
-    The main function to be called. Splits the zip into months."""
+Function number 2 in process pipeline.
+
+The main function to be called. Splits the zip into months."""
     global outputDir, recipName
     global chat_txt_list
 
@@ -72,7 +78,11 @@ def date_split():
 
 
 def zip_up_split_folders():
-    """Zip up all the folders created by date_split()."""
+    """MUST CALL date_split() FIRST.
+
+Function number 3 in process pipeline.
+
+Zip up all the folders created by date_split()."""
     folders = glob(f"{outputDir}/*")
     for folder in folders:  # For all folders in outputDir
         make_archive(folder, "zip", folder)  # Create zip file from folder
@@ -84,8 +94,8 @@ def zip_up_split_folders():
         os.rmdir(folder)
 
 
-def message_date_parse(string):  # Split _chat.txt into months
-    """Copy messages from _chat.txt to the correct month folder."""
+def message_date_parse(string):
+    """Split _chat.txt into months by copying messages from _chat.txt to the correct month folder."""
     global month, year
 
     string = string.replace("\u200e", "")  # Clear left-to-right mark
@@ -141,7 +151,7 @@ def non_dated_attachment_parse(file_full_directory):
 
             os.rename(file_full_directory, f"{month_dir}/{filename}")
 
-            break  # Break from for loop
+            break  # Break out of for loop
 
 
 def attachment_date_parse(file_full_directory):
