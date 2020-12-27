@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 from splitter_functions import extract_zip, date_split, zip_up_split_folders
+import os
 
 # ===== Initial Setup
 
