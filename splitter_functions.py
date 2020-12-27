@@ -37,14 +37,14 @@ def extract_zip(file, output, name):
 
     # Make dir if it doesn't exist
     try:
-        os.mkdir(f"{outputDir}\\{recipName}")
+        os.mkdir(f"{outputDir}/{recipName}")
     except OSError:
         pass
 
-    outputDir = f"{outputDir}\\{recipName}"  # Change outputDir for convenience
+    outputDir = f"{outputDir}/{recipName}"  # Change outputDir for convenience
 
     zip_file = ZipFile(file)
-    zip_file.extractall(f"{outputDir}\\full_temp")
+    zip_file.extractall(f"{outputDir}/full_temp")
     zip_file.close()
 
 
@@ -56,28 +56,28 @@ def date_split():
     global chat_txt_list
 
     # Creates chat_txt_list as list of lines in _chat.txt
-    with open(f"{outputDir}\\full_temp\\_chat.txt", encoding="utf-8") as attachment:
+    with open(f"{outputDir}/full_temp/_chat.txt", encoding="utf-8") as attachment:
         chat_txt_list = attachment.read().splitlines()
 
     for message in chat_txt_list:
         message_date_parse(message)
 
-    os.remove(f"{outputDir}\\full_temp\\_chat.txt")
+    os.remove(f"{outputDir}/full_temp/_chat.txt")
 
-    files = glob(f"{outputDir}\\full_temp\\*")
+    files = glob(f"{outputDir}/full_temp/*")
     for attachment in files:
         attachment_date_parse(attachment)
 
-    os.rmdir(f"{outputDir}\\full_temp")
+    os.rmdir(f"{outputDir}/full_temp")
 
 
 def zip_up_split_folders():
     """Zip up all the folders created by date_split()."""
-    folders = glob(f"{outputDir}\\*")
+    folders = glob(f"{outputDir}/*")
     for folder in folders:  # For all folders in outputDir
         make_archive(folder, "zip", folder)  # Create zip file from folder
 
-        files = glob(f"{folder}\\*")
+        files = glob(f"{folder}/*")
         for f in files:  # For all files in folder
             os.remove(f)
 
@@ -93,7 +93,7 @@ def message_date_parse(string):  # Split _chat.txt into months
 
     # If blank line, just write "\n"
     if string == "":
-        with open(f"{outputDir}\\{recipName} - {month} {year}\\_chat.txt", "a", encoding="utf-8") as file:
+        with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
             file.write("\n")
         return
 
@@ -107,15 +107,15 @@ def message_date_parse(string):  # Split _chat.txt into months
         if month.startswith("0"):
             month = month.replace("0", "")
 
-        month_dir = f"{outputDir}\\{recipName} - {month} {year}"
+        month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
         # If dir doesn't exist, make dir and file
         if not os.path.exists(month_dir):
             os.mkdir(month_dir)
-            open(f"{month_dir}\\_chat.txt", "x", encoding="utf-8")
+            open(f"{month_dir}/_chat.txt", "x", encoding="utf-8")
 
     # Write string to _chat.txt in correct folder
-    with open(f"{outputDir}\\{recipName} - {month} {year}\\_chat.txt", "a", encoding="utf-8") as file:
+    with open(f"{outputDir}/{recipName} - {month} {year}/_chat.txt", "a", encoding="utf-8") as file:
         file.write(string_bak + "\n")
 
 
@@ -123,7 +123,7 @@ def non_dated_attachment_parse(file_full_directory):
     """Parse and move attachments that aren't properly dated."""
     global month, year
 
-    filename = file_full_directory.split("\\")[-1]
+    filename = file_full_directory.split("/")[-1]
 
     for chat_line in chat_txt_list:
         if chat_line.find(f"<attached: {filename}>"):
@@ -137,9 +137,9 @@ def non_dated_attachment_parse(file_full_directory):
             if month.startswith("0"):
                 month = month.replace("0", "")
 
-            month_dir = f"{outputDir}\\{recipName} - {month} {year}"
+            month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
-            os.rename(file_full_directory, f"{month_dir}\\{filename}")
+            os.rename(file_full_directory, f"{month_dir}/{filename}")
 
             break  # Break from for loop
 
@@ -164,8 +164,8 @@ def attachment_date_parse(file_full_directory):
     if month.startswith("0"):
         month = month.replace("0", "")
 
-    month_dir = f"{outputDir}\\{recipName} - {month} {year}"
+    month_dir = f"{outputDir}/{recipName} - {month} {year}"
 
-    filename = file_full_directory.split("\\")[-1]
+    filename = file_full_directory.split("/")[-1]
 
-    os.rename(file_full_directory, f"{month_dir}\\{filename}")
+    os.rename(file_full_directory, f"{month_dir}/{filename}")
