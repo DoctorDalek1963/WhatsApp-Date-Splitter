@@ -29,7 +29,7 @@ outputDir = recipName = ""
 chat_txt_list = ""
 
 
-def extract_zip(file, output, name):
+def extract_zip(file: str, output: str, name: str):
     """The function to be called first.
 
 Function number 1 in process pipeline.
@@ -94,7 +94,7 @@ Zip up all the folders created by date_split()."""
         os.rmdir(folder)
 
 
-def message_date_parse(string):
+def message_date_parse(string: str):
     """Split _chat.txt into months by copying messages from _chat.txt to the correct month folder."""
     global month, year
 
@@ -129,7 +129,7 @@ def message_date_parse(string):
         file.write(string_bak + "\n")
 
 
-def non_dated_attachment_parse(file_full_directory):
+def non_dated_attachment_parse(file_full_directory: str):
     """Parse and move attachments that aren't properly dated."""
     global month, year
 
@@ -154,7 +154,7 @@ def non_dated_attachment_parse(file_full_directory):
             break  # Break out of for loop
 
 
-def attachment_date_parse(file_full_directory):
+def attachment_date_parse(file_full_directory: str):
     """Move correctly dated attachments to the correct month folder."""
     global month, year
 
