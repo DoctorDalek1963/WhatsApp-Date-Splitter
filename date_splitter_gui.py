@@ -21,6 +21,7 @@ from splitter_functions import split_single_chat
 from tkinter import filedialog, StringVar
 import tkinter as tk
 import threading
+import _tkinter
 import os
 
 cwd = os.getcwd()
@@ -38,7 +39,7 @@ descriptionText = """Steps:\n
 
 default_x_padding = 10
 default_y_padding = 5
-dedicated_padding_y = 15
+gap_y_padding = (5, 15)
 
 # ===== Functions used on tk buttons
 
@@ -76,6 +77,7 @@ def process():
 root = tk.Tk()
 root.title("WhatsApp Date Splitter")
 root.resizable(False, False)
+root.iconbitmap('icon.ico')
 
 selected_zip_var = StringVar()
 selected_output_var = StringVar()
@@ -83,13 +85,6 @@ splitting_string_var = StringVar()
 
 
 # ===== Create widgets
-
-# Create padding widgets
-middle_column_padding = tk.LabelFrame(root)
-row_padding_1 = tk.LabelFrame(root)
-row_padding_2 = tk.LabelFrame(root)
-row_padding_3 = tk.LabelFrame(root)
-row_padding_4 = tk.LabelFrame(root)
 
 # Create input widgets
 select_zip_button = tk.Button(root, text="Select an exported chat", command=select_zip, bd=3)
@@ -112,83 +107,78 @@ exit_button = tk.Button(root, text="Exit", command=root.destroy, bd=3)
 
 # ===== Place widgets
 
-# Spacing between instructions & inputs
-middle_column_padding.grid(row=1, rowspan=9, column=1, padx=30)
-
-row_padding_1.grid(row=4, column=2, pady=dedicated_padding_y)
+# Instructions for use
+description_label.grid(row=1, rowspan=7, column=0, padx=(default_x_padding, 50), pady=15)
 
 # Select zip and display name
-select_zip_button.grid(row=2, column=2, padx=default_x_padding, pady=default_y_padding)
-selected_zip_label.grid(row=3, column=2, padx=default_x_padding, pady=default_y_padding)
-
-row_padding_2.grid(row=4, column=2, pady=dedicated_padding_y)
+select_zip_button.grid(row=0, column=2, padx=default_x_padding, pady=(15, default_y_padding))
+selected_zip_label.grid(row=1, column=2, padx=default_x_padding, pady=gap_y_padding)
 
 # Select output directory and display it
-select_output_button.grid(row=5, column=2, padx=default_x_padding, pady=default_y_padding)
-selected_output_label.grid(row=6, column=2, padx=default_x_padding, pady=default_y_padding)
-
-row_padding_3.grid(row=7, column=2, pady=dedicated_padding_y)
+select_output_button.grid(row=2, column=2, padx=default_x_padding, pady=default_y_padding)
+selected_output_label.grid(row=3, column=2, padx=default_x_padding, pady=gap_y_padding)
 
 # Enter recipient name
-name_box_label.grid(row=8, column=2, padx=default_x_padding, pady=default_y_padding)
-enter_name_box.grid(row=9, column=2, padx=default_x_padding, pady=default_y_padding)
-
-# Instructions for use
-description_label.grid(row=1, rowspan=12, column=0, padx=default_x_padding, pady=default_y_padding)
-
-row_padding_4.grid(row=10, column=2, pady=dedicated_padding_y)
+name_box_label.grid(row=4, column=2, padx=default_x_padding, pady=default_y_padding)
+enter_name_box.grid(row=5, column=2, padx=default_x_padding, pady=(default_y_padding, 25))
 
 # Place special button widgets
-split_button.grid(row=11, column=2, padx=default_x_padding, pady=default_y_padding)
-splitting_string_label.grid(row=12, column=2, padx=default_x_padding, pady=default_y_padding)
-exit_button.grid(row=13, column=2, padx=default_x_padding, pady=default_y_padding)
+split_button.grid(row=6, column=2, padx=default_x_padding, pady=default_y_padding)
+splitting_string_label.grid(row=7, column=2, padx=default_x_padding, pady=default_y_padding)
+exit_button.grid(row=8, column=2, padx=default_x_padding, pady=(default_y_padding, 15))
 
 
 # ===== Loop to sustain window
 
-# Infinite loop to update tk window and check for conditions to activate or deactivate buttons
+
 def update_loop():
+    """Infinite loop to continually update the root tkinter window and check for conditions
+to activate/deactivate buttons."""
     global recipName, inputZip
     global startExportFlag, finishExportFlag
 
     while True:
-        if enter_name_box.get():
-            recipName = enter_name_box.get()
+        try:
+            if enter_name_box.get():
+                recipName = enter_name_box.get()
 
-        truncated_input_zip = inputZip.split("/")[-1]
-        selected_zip_var.set(f"Selected: \n{truncated_input_zip}")
+            truncated_input_zip = inputZip.split("/")[-1]
+            selected_zip_var.set(f"Selected: \n{truncated_input_zip}")
 
-        selected_output_var.set(f"Selected: \n{outputDir}")
+            selected_output_var.set(f"Selected: \n{outputDir}")
 
-        if inputZip and outputDir and recipName:
-            split_button.config(state="normal")
-        else:
-            split_button.config(state="disabled")
+            if inputZip and outputDir and recipName:
+                split_button.config(state="normal")
+            else:
+                split_button.config(state="disabled")
 
-        if startExportFlag:
-            process_thread = threading.Thread(target=process)
-            process_thread.start()
-            splitting_string_var.set("Splitting...")
+            if startExportFlag:
+                process_thread = threading.Thread(target=process)
+                process_thread.start()
+                splitting_string_var.set("Splitting...")
 
-            # Allow split button to be greyed out
-            inputZip = ""
-            enter_name_box.delete(0, tk.END)  # Clear entry box
+                # Allow split button to be greyed out
+                inputZip = ""
+                enter_name_box.delete(0, tk.END)  # Clear entry box
 
-            select_zip_button.config(state="disabled")
-            select_output_button.config(state="disabled")
-            enter_name_box.config(state="disabled")
-            exit_button.config(state="disabled")
-            startExportFlag = False
+                select_zip_button.config(state="disabled")
+                select_output_button.config(state="disabled")
+                enter_name_box.config(state="disabled")
+                exit_button.config(state="disabled")
+                startExportFlag = False
 
-        if finishExportFlag:
-            splitting_string_var.set("")
-            select_zip_button.config(state="normal")
-            select_output_button.config(state="normal")
-            enter_name_box.config(state="normal")
-            exit_button.config(state="normal")
-            finishExportFlag = False
+            if finishExportFlag:
+                splitting_string_var.set("")
+                select_zip_button.config(state="normal")
+                select_output_button.config(state="normal")
+                enter_name_box.config(state="normal")
+                exit_button.config(state="normal")
+                finishExportFlag = False
 
-        root.update()
+            root.update()
+
+        except _tkinter.TclError:
+            return
 
 
 update_loop()
