@@ -22,45 +22,49 @@
 from splitter_functions import extract_zip, date_split, zip_up_split_folders
 import os
 
-# ===== Initial Setup
 
-cwd = os.getcwd()
+def run_cli():
+    cwd = os.getcwd()
 
-print("Welcome to the WhatsApp Date Splitter!")
-print()
-print(f"Please move the selected zip file to {cwd}")
-print()
-inputFile = input("Please enter the name of the input zip file: ")
-if not inputFile.endswith(".zip"):
-    inputFile += ".zip"
-print()
-outputDir = input("Please enter a full output directory: ")
-print()
-recipName = input("Please enter the name of the recipient: ")
-print()
+    print("Welcome to the WhatsApp Date Splitter!")
+    print()
+    print(f"Please move the selected zip file to {cwd}")
+    print()
+    inputFile = input("Please enter the name of the input zip file: ")
+    if not inputFile.endswith(".zip"):
+        inputFile += ".zip"
+    print()
+    outputDir = input("Please enter a full output directory: ")
+    print()
+    recipName = input("Please enter the name of the recipient: ")
+    print()
 
-try:
-    print(f"Unzipping {inputFile}...")
-    extract_zip(inputFile, outputDir, recipName)
-    print(f"Unzipped!")
-except OSError:
-    print(f"{inputFile} not found")
-    input("Press enter to exit")
-    exit(0)
+    try:
+        print(f"Unzipping {inputFile}...")
+        extract_zip(inputFile, outputDir, recipName)
+        print(f"Unzipped!")
+    except OSError:
+        print(f"{inputFile} not found")
+        input("Press enter to exit")
+        exit(0)
 
-print()
+    print()
 
-print(f"Splitting {inputFile} into months...")
+    print(f"Splitting {inputFile} into months...")
 
-date_split()
+    date_split()
 
-print("Split complete!")
-print()
+    print("Split complete!")
+    print()
 
-print("Zipping...")
+    print("Zipping...")
 
-zip_up_split_folders()
+    zip_up_split_folders()
 
-print("Zipping complete!")
-print()
-input("Press enter to exit the program...")
+    print("Zipping complete!")
+    print()
+    input("Press enter to exit the program...")
+
+
+if __name__ == "__main__":
+    run_cli()
