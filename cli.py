@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # WhatsApp-Date-Splitter is a program that takes large exported WhatsApp
 # chats and splits them into months to make the zip files more manageable
 # for WhatsApp-Formatter <https://github.com/DoctorDalek1963/WhatsApp-Formatter>.

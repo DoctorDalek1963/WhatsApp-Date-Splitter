@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Fully compile the GUI version of the date splitter with pyinstaller."""
 
 import shutil
