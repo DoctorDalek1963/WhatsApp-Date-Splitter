@@ -79,7 +79,11 @@ def process():
 root = tk.Tk()
 root.title("WhatsApp Date Splitter")
 root.resizable(False, False)
-root.iconbitmap('icon.ico')
+# Some operating systems don't support this iconbitmap
+try:
+    root.iconbitmap('icon.ico')
+except _tkinter.TclError:
+    pass
 
 selected_zip_var = StringVar()
 selected_output_var = StringVar()
