@@ -184,6 +184,11 @@ class DateSplitterGUI(QMainWindow):
         self._central_widget.setLayout(self._hbox)
         self.setCentralWidget(self._central_widget)
 
+        # ===== Create threads
+
+        self._check_everything_thread = threading.Thread(target=self._loop_check_everything)
+        self._check_everything_thread.start()
+
     def _arrange_widgets(self):
         """Arrange the widgets created by __init__() nicely."""
         self._hbox.addWidget(self._instructions_label)
