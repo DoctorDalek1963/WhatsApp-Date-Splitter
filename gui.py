@@ -251,7 +251,7 @@ class DateSplitterGUI(QMainWindow):
 
         # Clear everything
         # This doesn't actually clear the selected chat but it clears the label, prompting the user to choose a new one
-        self._selected_chat_label.setText('')
+        self._selected_chat_label.setText('Selected:\n')
         self._chat_title_textbox.setText('')
 
         functions.split_single_chat(*data)
