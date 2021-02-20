@@ -19,169 +19,279 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from functions import split_single_chat
-from tkinter import filedialog, StringVar
-import tkinter as tk
+"""This is the module that holds the GUI for the WhatsApp Date Splitter.
+
+Classes:
+    DateSplitterGUI:
+        The class for th GUI for the WhatsApp Date Splitter.
+
+        You have to create an instance (no arguments taken) and then call show() on it to show the window.
+
+Functions:
+    show_window():
+        Create an instance of the GUI window and show it. Takes no arguments.
+
+"""
+
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QWidget, QShortcut
+import sys
 import threading
-import _tkinter
-import os
+import functions
 
-cwd = os.getcwd()
-inputZip = outputDir = recipName = ""
-startExportFlag = finishExportFlag = False
 
-descriptionText = """Steps:\n
+# This is a function I copied from [StackOverflow](https://stackoverflow.com/questions/64336575/select-a-file-or-a-folder-in-qfiledialog-pyqt5)
+# It is a custom file selection dialog which also allows for the selection of directories
+def get_open_files_and_dirs(parent=None, caption='', directory='', filter='', initial_filter='', options=None):
+    """Open a Qt dialog that can select files or directories.
+
+    I copied this function from [StackOverflow](https://stackoverflow.com/questions/64336575/select-a-file-or-a-folder-in-qfiledialog-pyqt5).
+    """
+    def update_text():
+        # update the contents of the line edit widget with the selected files
+        selected = []
+        for index in view.selectionModel().selectedRows():
+            selected.append('"{}"'.format(index.data()))
+        line_edit.setText(' '.join(selected))
+
+    dialog = QtWidgets.QFileDialog(parent, windowTitle=caption)
+    dialog.setFileMode(dialog.ExistingFiles)
+    if options:
+        dialog.setOptions(options)
+    dialog.setOption(dialog.DontUseNativeDialog, True)
+    if directory:
+        dialog.setDirectory(directory)
+    if filter:
+        dialog.setNameFilter(filter)
+        if initial_filter:
+            dialog.selectNameFilter(initial_filter)
+
+    # by default, if a directory is opened in file listing mode,
+    # QFileDialog.accept() shows the contents of that directory, but we
+    # need to be able to "open" directories as we can do with files, so we
+    # just override accept() with the default QDialog implementation which
+    # will just return exec_()
+    dialog.accept = lambda: QtWidgets.QDialog.accept(dialog)
+
+    # there are many item views in a non-native dialog, but the ones displaying
+    # the actual contents are created inside a QStackedWidget; they are a
+    # QTreeView and a QListView, and the tree is only used when the
+    # viewMode is set to QFileDialog.Details, which is not this case
+    stacked_widget = dialog.findChild(QtWidgets.QStackedWidget)
+    view = stacked_widget.findChild(QtWidgets.QListView)
+    view.selectionModel().selectionChanged.connect(update_text)
+
+    line_edit = dialog.findChild(QtWidgets.QLineEdit)
+    # clear the line edit contents whenever the current directory changes
+    dialog.directoryEntered.connect(lambda: line_edit.setText(''))
+
+    dialog.exec_()
+    return dialog.selectedFiles()
+
+
+class DateSplitterGUI(QMainWindow):
+    """The class for the GUI for the WhatsApp Date Splitter.
+
+    Subclasses PyQt5.QtWidgets.QMainWindow. It has no public methods or attributes and only has __init__().
+    You have to create an instance (no arguments taken) and then call show() on it to show the window.
+    """
+
+    def __init__(self):
+        """Create an instance of the WhatsApp Date Splitter GUI.
+
+        This method takes no arguments and you must call show() after initialising an instance of it.
+        """
+        super(DateSplitterGUI, self).__init__()
+
+        # A boolean to see if the window exists. Used to close properly
+        self._exists = True
+
+        self.setWindowTitle('WhatsApp Date Splitter')
+        with open('style_gui.css', 'r') as f:
+            self.setStyleSheet(f.read())
+
+        self._instructions_text = '''Steps:\n
 1. Select an exported chat\n
 2. Select an output directory\n
 3. Enter the name of the recipient (case sensitive)\n
 4. Click the split button\n
 5. Wait until the 'Splitting...' text disappears\n
 6. If the zip file is big, this may take some time\n
-7. Choose a new zip to split or exit the program"""
+7. Choose a new zip to split or exit the program'''
 
-default_x_padding = 10
-default_y_padding = 5
-gap_y_padding = (5, 15)
+        self._selected_chat = ''
+        self._selected_output = ''
 
-# ===== Functions used on tk buttons
+        self._chat_title = ''
 
+        # ===== Create widgets
 
-def select_zip():
-    global inputZip
-    inputZip = filedialog.askopenfilename(initialdir=cwd, title="Select an exported chat",
-                                          filetypes=[("Zip files", "*.zip")])
+        self._instructions_label = QtWidgets.QLabel(self)
+        self._instructions_label.setText(self._instructions_text)
+        self._instructions_label.setAlignment(QtCore.Qt.AlignCenter)
+        self._instructions_label.setProperty('class', 'instructions')
 
+        self._select_chat_button = QtWidgets.QPushButton(self)
+        self._select_chat_button.setText('Select an exported chat')
+        self._select_chat_button.clicked.connect(self._select_chat_dialog)
 
-def select_output_dir():
-    global outputDir
-    outputDir = filedialog.askdirectory(initialdir="/", title="Select an output directory")
+        self._selected_chat_label = QtWidgets.QLabel(self)
+        self._selected_chat_label.setText('Selected:\n')
+        self._selected_chat_label.setAlignment(QtCore.Qt.AlignCenter)
 
+        self._select_output_button = QtWidgets.QPushButton(self)
+        self._select_output_button.setText('Select an output directory')
+        self._select_output_button.clicked.connect(self._select_output_dialog)
 
-def start_export():
-    global startExportFlag
-    startExportFlag = True
+        self._selected_output_label = QtWidgets.QLabel(self)
+        self._selected_output_label.setText('Selected:\n')
+        self._selected_output_label.setAlignment(QtCore.Qt.AlignCenter)
 
+        self._chat_title_label = QtWidgets.QLabel(self)
+        self._chat_title_label.setText('Enter the desired title of the chat:')
+        self._chat_title_label.setAlignment(QtCore.Qt.AlignCenter)
 
-def process():
-    global inputZip, recipName, outputDir
-    global finishExportFlag
-    fixed_name_zip = inputZip
-    fixed_name_recip = recipName
-    fixed_name_dir = outputDir
+        self._chat_title_textbox = QtWidgets.QLineEdit(self)
 
-    split_single_chat(fixed_name_zip, fixed_name_dir, fixed_name_recip)
-    finishExportFlag = True
+        self._spacer_label = QtWidgets.QLabel(self)
+        self._spacer_label.setText('')
 
+        self._split_chat_button = QtWidgets.QPushButton(self)
+        self._split_chat_button.setText('Process all')
+        self._split_chat_button.setEnabled(False)
+        self._split_chat_button.clicked.connect(self._start_split_chat_thread)
 
-# ===== Tkinter initialisation
+        self._splitting_label = QtWidgets.QLabel(self)
+        self._splitting_label.setText('')
+        self._splitting_label.setAlignment(QtCore.Qt.AlignCenter)
 
-# Init window
-root = tk.Tk()
-root.title("WhatsApp Date Splitter")
-root.resizable(False, False)
-root.iconbitmap('icon.ico')
+        self._exit_button = QtWidgets.QPushButton(self)
+        self._exit_button.setText('Exit')
+        self._exit_button.clicked.connect(self._close_properly)
 
-selected_zip_var = StringVar()
-selected_output_var = StringVar()
-splitting_string_var = StringVar()
+        # This is a shortcut for the exit button
+        self._exit_shortcut = QShortcut(QKeySequence("Ctrl+Q"), self)
+        self._exit_shortcut.activated.connect(self._close_properly)
 
+        # ===== Arrange widgets properly
 
-# ===== Create widgets
+        self._vbox = QVBoxLayout()
+        self._hbox = QHBoxLayout()
+        self._arrange_widgets()
 
-# Create input widgets
-select_zip_button = tk.Button(root, text="Select an exported chat", command=select_zip, bd=3)
-selected_zip_label = tk.Label(root, textvariable=selected_zip_var)
+        self._central_widget = QWidget()
+        self._central_widget.setLayout(self._hbox)
+        self.setCentralWidget(self._central_widget)
 
-select_output_button = tk.Button(root, text="Select an output directory", command=select_output_dir, bd=3)
-selected_output_label = tk.Label(root, textvariable=selected_output_var)
+    def _arrange_widgets(self):
+        """Arrange the widgets created by __init__() nicely."""
+        self._hbox.addWidget(self._instructions_label)
+        # The margins are around the edges of the window and the spacing is between widgets
+        self.setContentsMargins(10, 10, 10, 10)
+        self._hbox.setSpacing(20)
 
-name_box_label = tk.Label(root, text="Enter the name of the recipient:")
-enter_name_box = tk.Entry(root)
+        self._vbox.addWidget(self._select_chat_button)
+        self._vbox.addWidget(self._selected_chat_label)
+        self._vbox.addWidget(self._select_output_button)
+        self._vbox.addWidget(self._selected_output_label)
+        self._vbox.addWidget(self._chat_title_label)
+        self._vbox.addWidget(self._chat_title_textbox)
+        self._vbox.addWidget(self._spacer_label)
+        self._vbox.addWidget(self._split_chat_button)
+        self._vbox.addWidget(self._splitting_label)
+        self._vbox.addWidget(self._exit_button)
 
-# Instructions for use
-description_label = tk.Label(root, text=descriptionText)
+        self._hbox.addLayout(self._vbox)
 
-# Create special button widgets
-split_button = tk.Button(root, text="Split", command=start_export, state="disabled", bd=3)
-splitting_string_label = tk.Label(root, textvariable=splitting_string_var)
-exit_button = tk.Button(root, text="Exit", command=root.destroy, bd=3)
+    def _select_chat_dialog(self):
+        """Open a dialog and allow the user to select a zip file, which then becomes self._selected_chat."""
+        # This is a file select dialog to select a zip file
+        self._selected_chat_raw = get_open_files_and_dirs(self, caption='Select an exported chat', filter='Zip files (*.zip)')
 
-
-# ===== Place widgets
-
-# Instructions for use
-description_label.grid(row=1, rowspan=7, column=0, padx=(default_x_padding, 50), pady=15)
-
-# Select zip and display name
-select_zip_button.grid(row=0, column=2, padx=default_x_padding, pady=(15, default_y_padding))
-selected_zip_label.grid(row=1, column=2, padx=default_x_padding, pady=gap_y_padding)
-
-# Select output directory and display it
-select_output_button.grid(row=2, column=2, padx=default_x_padding, pady=default_y_padding)
-selected_output_label.grid(row=3, column=2, padx=default_x_padding, pady=gap_y_padding)
-
-# Enter recipient name
-name_box_label.grid(row=4, column=2, padx=default_x_padding, pady=default_y_padding)
-enter_name_box.grid(row=5, column=2, padx=default_x_padding, pady=(default_y_padding, 25))
-
-# Place special button widgets
-split_button.grid(row=6, column=2, padx=default_x_padding, pady=default_y_padding)
-splitting_string_label.grid(row=7, column=2, padx=default_x_padding, pady=default_y_padding)
-exit_button.grid(row=8, column=2, padx=default_x_padding, pady=(default_y_padding, 15))
-
-
-# ===== Loop to sustain window
-
-
-def update_loop():
-    """Infinite loop to continually update the root tkinter window and check for conditions
-to activate/deactivate buttons."""
-    global recipName, inputZip
-    global startExportFlag, finishExportFlag
-
-    while True:
         try:
-            if enter_name_box.get():
-                recipName = enter_name_box.get()
+            # We then need to trim the raw data down into just the name of the zip file
+            self._selected_chat = self._selected_chat_raw[0]
+            self._selected_chat_display = self._selected_chat.split('/')[-1]
+        except IndexError:
+            self._selected_chat = ''
+            self._selected_chat_display = ''
 
-            truncated_input_zip = inputZip.split("/")[-1]
-            selected_zip_var.set(f"Selected: \n{truncated_input_zip}")
+        self._selected_chat_label.setText(f'Selected:\n{self._selected_chat_display}')
 
-            selected_output_var.set(f"Selected: \n{outputDir}")
+    def _select_output_dialog(self):
+        """Open a dialog and allow the user to select a directory, which then becomes self._selected_output."""
+        self._selected_output_raw = get_open_files_and_dirs(self, caption='Select an output directory')
 
-            if inputZip and outputDir and recipName:
-                split_button.config(state="normal")
-            else:
-                split_button.config(state="disabled")
+        try:
+            # We then need to trim the raw data down into just the name of the folder
+            self._selected_output = self._selected_output_raw[0]
+        except IndexError:
+            self._selected_output = ''
 
-            if startExportFlag:
-                process_thread = threading.Thread(target=process)
-                process_thread.start()
-                splitting_string_var.set("Splitting...")
+        self._selected_output_label.setText(f'Selected:\n{self._selected_output}')
 
-                # Allow split button to be greyed out
-                inputZip = ""
-                enter_name_box.delete(0, tk.END)  # Clear entry box
+    def _split_chat(self):
+        """Pass the necessary arguments to functions.split_single_chat().
 
-                select_zip_button.config(state="disabled")
-                select_output_button.config(state="disabled")
-                enter_name_box.config(state="disabled")
-                exit_button.config(state="disabled")
-                startExportFlag = False
+        This method actually creates a copy of all the data, then clears the attributes and passes the original values to the function.
+        """
+        # Disable the exit button until the split_single_chat function returns
+        self._exit_button.setEnabled(False)
+        self._splitting_label.setText('Splitting...')
 
-            if finishExportFlag:
-                splitting_string_var.set("")
-                select_zip_button.config(state="normal")
-                select_output_button.config(state="normal")
-                enter_name_box.config(state="normal")
-                exit_button.config(state="normal")
-                finishExportFlag = False
+        # Pack necessary arguments into list, copy it, and pass it to the function
+        # This allows those instance attributes to be cleared or changed while the function is running
+        data = [self._selected_chat, self._selected_output, self._chat_title].copy()
 
-            root.update()
+        # Clear everything
+        # This doesn't actually clear the selected chat but it clears the label, prompting the user to choose a new one
+        self._selected_chat_label.setText('')
+        self._chat_title_textbox.setText('')
 
-        except _tkinter.TclError:
-            return
+        functions.split_single_chat(*data)
+
+        self._splitting_label.setText('')
+        self._exit_button.setEnabled(True)
+
+    def _start_split_chat_thread(self):
+        """Start a thread running self._split_chat() so it can be run in the background."""
+        self._split_chat_thread = threading.Thread(target=self._split_chat)
+        self._split_chat_thread.start()
+
+    def _get_textbox_value(self):
+        """Get the text in self._chat_title_textbox and assign it to self._chat_title."""
+        self._chat_title = self._chat_title_textbox.text()
+
+    def _enable_split_button(self):
+        """Set self._split_chat_button to enabled if there is data in all the conditions have been met.
+
+        There must be a non-empty string in self._chat_title_textbox and a chat and an output must be selected.
+        """
+        if self._chat_title != '' and self._selected_chat != '' and self._selected_output != '':
+            self._split_chat_button.setEnabled(True)
+        else:
+            self._split_chat_button.setEnabled(False)
+
+    def _loop_check_everything(self):
+        """Run the methods to check the textbox and enable the split button while self._exists is True."""
+        while self._exists:
+            self._get_textbox_value()
+            self._enable_split_button()
+
+    def _close_properly(self):
+        """Set the self._exists boolean to false to end the threads and then close the window."""
+        self._exists = False
+        self.close()
 
 
-if __name__ == "__main__":
-    update_loop()
+def show_window():
+    """Create an instance of DateSplitterGUI and show it. Terminate the program when the user exits the window."""
+    app = QApplication(sys.argv)
+    window = DateSplitterGUI()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    show_window()
