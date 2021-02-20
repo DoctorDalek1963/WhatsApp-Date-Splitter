@@ -30,27 +30,27 @@ def run_cli():
     print()
     print(f"Please move the selected zip file to {cwd}")
     print()
-    inputFile = input("Please enter the name of the input zip file: ")
-    if not inputFile.endswith(".zip"):
-        inputFile += ".zip"
+    input_file = input("Please enter the name of the input zip file: ")
+    if not input_file.endswith(".zip"):
+        input_file += ".zip"
     print()
-    outputDir = input("Please enter a full output directory: ")
+    output_dir = input("Please enter a full output directory: ")
     print()
-    recipName = input("Please enter the name of the recipient: ")
+    recip_name = input("Please enter the name of the recipient: ")
     print()
 
     try:
-        print(f"Unzipping {inputFile}...")
-        extract_zip(inputFile, outputDir, recipName)
+        print(f"Unzipping {input_file}...")
+        extract_zip(input_file, output_dir, recip_name)
         print(f"Unzipped!")
     except OSError:
-        print(f"{inputFile} not found")
+        print(f"{input_file} not found")
         input("Press enter to exit")
         exit(0)
 
     print()
 
-    print(f"Splitting {inputFile} into months...")
+    print(f"Splitting {input_file} into months...")
 
     date_split()
 
