@@ -17,6 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""This module contains the functions to split one exported WhatsApp chat into several zip files separated by month.
+
+Functions:
+    extract_zip(input_file: str, output_dir: str, title: str):
+        Extract the zip file given with the file argument and set up global variables for other functions.
+
+    date_split():
+        Split the already extracted zip files into folders organised by month.
+
+    zip_up_split_folders():
+        Zip up all the folders created by date_split().
+
+    message_date_parse(string: str):
+        Split _chat.txt into months by copying messages from _chat.txt to the correct month folder.
+
+    non_dated_attachment_parse(file: str):
+        Parse and move attachments that don't have the date in their name.
+
+    attachment_date_parse(file: str):
+        Move correctly dated attachment files to the correct month folder.
+
+    split_single_chat(input_file: str, output_dir: str, title: str):
+        Split one exported chat completely by calling all the necessary functions.
+
+"""
+
 from shutil import make_archive
 from datetime import datetime
 from zipfile import ZipFile
@@ -29,15 +55,25 @@ outputDir = chatTitle = ""
 chat_txt_list = ""
 
 
-def extract_zip(file: str, output: str, name: str):
-    """The function to be called first.
+def extract_zip(input_file: str, output_dir: str, title: str):
+    """Extract the zip file given with the file argument and set up global variables for other functions.
 
-Function number 1 in process pipeline.
+    This function must be called first in the process pipeline.
 
-Extracts the zip and sets up global variables for all other functions."""
+    Arguments:
+        input_file:
+            The zip file to be extracted.
+
+        output_dir:
+            The output directory to put the final zip files in.
+
+        title:
+            The intended title of the chat and final zip files.
+
+    """
     global outputDir, chatTitle
-    outputDir = output
-    chatTitle = name
+    outputDir = output_dir
+    chatTitle = title
 
     # Make dir if it doesn't exist
     try:
@@ -47,17 +83,16 @@ Extracts the zip and sets up global variables for all other functions."""
 
     outputDir = f"{outputDir}/{chatTitle}"  # Change outputDir for convenience
 
-    zip_file = ZipFile(file)
+    zip_file = ZipFile(input_file)
     zip_file.extractall(f"{outputDir}/temp")
     zip_file.close()
 
 
 def date_split():
-    """MUST CALL extract_zip() FIRST.
+    """Split the already extracted zip files into folders organised by month.
 
-Function number 2 in process pipeline.
-
-The main function to be called. Splits the zip into months."""
+    This is the second function in the process pipeline. extract_zip() must be called first.
+    """
     global outputDir, chatTitle
     global chat_txt_list
 
@@ -78,11 +113,10 @@ The main function to be called. Splits the zip into months."""
 
 
 def zip_up_split_folders():
-    """MUST CALL date_split() FIRST.
+    """Zip up all the folders created by date_split().
 
-Function number 3 in process pipeline.
-
-Zip up all the folders created by date_split()."""
+    This is the third function in the process pipeline. extract_zip() and date_split() must be called first.
+    """
     folders = glob(f"{outputDir}/*")
     for folder in folders:  # For all folders in outputDir
         make_archive(folder, "zip", folder)  # Create zip file from folder
@@ -129,11 +163,11 @@ def message_date_parse(string: str):
         file.write(string_bak + "\n")
 
 
-def non_dated_attachment_parse(file_full_directory: str):
-    """Parse and move attachments that aren't properly dated."""
+def non_dated_attachment_parse(file: str):
+    """Parse and move attachments that don't have the date in their name."""
     global month, year
 
-    filename = file_full_directory.split("/")[-1]
+    filename = file.split("/")[-1]
 
     for chat_line in chat_txt_list:
         if chat_line.find(f"<attached: {filename}>"):
@@ -149,20 +183,20 @@ def non_dated_attachment_parse(file_full_directory: str):
 
             month_dir = f"{outputDir}/{chatTitle} - {month} {year}"
 
-            os.rename(file_full_directory, f"{month_dir}/{filename}")
+            os.rename(file, f"{month_dir}/{filename}")
 
             break  # Break out of for loop
 
 
-def attachment_date_parse(file_full_directory: str):
-    """Move correctly dated attachments to the correct month folder."""
+def attachment_date_parse(file: str):
+    """Move correctly dated attachment files to the correct month folder."""
     global month, year
 
     # Use RegEx to parse date
-    file_date_match = re.search(r"\d{8}-\w+-(\d{4}-\d{2})-\d{2}-\d{2}-\d{2}-\d{2}\.\w+$", file_full_directory)
+    file_date_match = re.search(r"\d{8}-\w+-(\d{4}-\d{2})-\d{2}-\d{2}-\d{2}-\d{2}\.\w+$", file)
 
     if not file_date_match:  # Separate func for non-dated attachments
-        non_dated_attachment_parse(file_full_directory)
+        non_dated_attachment_parse(file)
         return
 
     date_raw = file_date_match.group(1)
@@ -176,17 +210,29 @@ def attachment_date_parse(file_full_directory: str):
 
     month_dir = f"{outputDir}/{chatTitle} - {month} {year}"
 
-    filename = file_full_directory.split("/")[-1]
+    filename = file.split("/")[-1]
 
-    os.rename(file_full_directory, f"{month_dir}/{filename}")
+    os.rename(file, f"{month_dir}/{filename}")
 
 
-def split_single_chat(input_file: str, output_dir: str, name: str):
-    """Split a chat completely by calling all the necessary functions.
+def split_single_chat(input_file: str, output_dir: str, title: str):
+    """Split one exported chat completely by calling all the necessary functions.
 
-This is the only function that needs to be called to split one chat."""
+    This is the only function that needs to be called to split one chat.
+
+    Arguments:
+        input_file:
+            The zip file to be extracted.
+
+        output_dir:
+            The output directory to put the final zip files in.
+
+        title:
+            The intended title of the chat and final zip files.
+
+    """
     try:
-        extract_zip(input_file, output_dir, name)
+        extract_zip(input_file, output_dir, title)
     except OSError:
         raise OSError('Zip file "' + input_file + '" not found')
     date_split()
