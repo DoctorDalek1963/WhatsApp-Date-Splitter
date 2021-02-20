@@ -114,7 +114,7 @@ class DateSplitterGUI(QMainWindow):
         self._instructions_text = '''Steps:\n
 1. Select an exported chat\n
 2. Select an output directory\n
-3. Enter the name of the recipient (case sensitive)\n
+3. Enter the desired title of the chat\n
 4. Click the split button\n
 5. Wait until the 'Splitting...' text disappears\n
 6. If the zip file is big, this may take some time\n
