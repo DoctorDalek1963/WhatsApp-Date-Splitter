@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-"""Fully compile the GUI version of the date splitter with pyinstaller."""
+"""This module compile the WhatsApp Date Splitter with pyinstaller in GUI or CLI format. GUI by default.
+
+Functions:
+    compile_date_splitter(gui=True):
+        Compile the WhatsApp Date Splitter with pyinstaller according to the truthiness of the gui keyword argument, which is True by default.
+
+"""
 
 import shutil
 import os
@@ -10,7 +16,10 @@ import subprocess
 def compile_date_splitter(gui=True):
     """Compile the WhatsApp Date Splitter using pyinstaller.
 
-This function takes one argument, gui, which is true by default. If it's true, this function will compile the GUI version of the formatter, if false, it will compile the command line version."""
+    Keyword arguments:
+        gui:
+            A boolean which is true if not specified. If true, the function will compile the GUI, if false, it will compile the CLI version.
+    """
     # Get filename from gui boolean
     filename = 'gui.py' if gui else 'cli.py'
 
