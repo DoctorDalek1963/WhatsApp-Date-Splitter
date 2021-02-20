@@ -48,7 +48,7 @@ Extracts the zip and sets up global variables for all other functions."""
     outputDir = f"{outputDir}/{chatTitle}"  # Change outputDir for convenience
 
     zip_file = ZipFile(file)
-    zip_file.extractall(f"{outputDir}/full_temp")
+    zip_file.extractall(f"{outputDir}/temp")
     zip_file.close()
 
 
@@ -62,19 +62,19 @@ The main function to be called. Splits the zip into months."""
     global chat_txt_list
 
     # Creates chat_txt_list as list of lines in _chat.txt
-    with open(f"{outputDir}/full_temp/_chat.txt", encoding="utf-8") as attachment:
+    with open(f"{outputDir}/temp/_chat.txt", encoding="utf-8") as attachment:
         chat_txt_list = attachment.read().splitlines()
 
     for message in chat_txt_list:
         message_date_parse(message)
 
-    os.remove(f"{outputDir}/full_temp/_chat.txt")
+    os.remove(f"{outputDir}/temp/_chat.txt")
 
-    files = glob(f"{outputDir}/full_temp/*")
+    files = glob(f"{outputDir}/temp/*")
     for attachment in files:
         attachment_date_parse(attachment)
 
-    os.rmdir(f"{outputDir}/full_temp")
+    os.rmdir(f"{outputDir}/temp")
 
 
 def zip_up_split_folders():
