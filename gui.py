@@ -38,7 +38,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QHBoxLayout, QWidget, QShortcut
 import sys
 import threading
-import functions
+import library
 
 
 # This is a function I copied from [StackOverflow](https://stackoverflow.com/questions/64336575/select-a-file-or-a-folder-in-qfiledialog-pyqt5)
@@ -254,7 +254,7 @@ class DateSplitterGUI(QMainWindow):
         self._selected_chat_label.setText('Selected:\n')
         self._chat_title_textbox.setText('')
 
-        functions.split_single_chat(*data)
+        library.split_single_chat(*data)
 
         self._splitting_label.setText('')
         self._exit_button.setEnabled(True)
